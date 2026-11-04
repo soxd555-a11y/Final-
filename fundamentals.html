@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Software testing fundamentals: testing vs QA vs QC, verification vs validation, defect lifecycle, principles, levels, types, pyramid, TDD/BDD, metrics, quality attributes." />
+  <title>Fundamentals - QA Playbook</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a78bfa'/%3E%3Cg fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M32 32c0-8 6-14 14-14 0 8-6 14-14 14Z'/%3E%3Cpath d='M32 32c0-8-6-14-14-14 0 8 6 14 14 14Z'/%3E%3Cpath d='M32 32c8 0 14 6 14 14-8 0-14-6-14-14Z'/%3E%3Cpath d='M32 32c-8 0-14 6-14 14 8 0 14-6 14-14Z'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.4' fill='%23d3f56f'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) { /* no-op */ }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css" />
+
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="index.html" class="nav-brand" aria-label="QA Playbook — หน้าแรก">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z"/>
+            <path d="M12 12c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/>
+            <path d="M12 12c3.3 0 6 2.7 6 6-3.3 0-6-2.7-6-6Z"/>
+            <path d="M12 12c-3.3 0-6 2.7-6 6 3.3 0 6-2.7 6-6Z"/>
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="brand-text">QA <em>Playbook</em></span>
+      </a>
+      <nav class="nav-primary" aria-label="เมนูหลัก">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="fundamentals.html" class="active">Fundamentals</a></li>
+          <li><a href="test-design.html">Test Design</a></li>
+          <li><a href="playwright.html">Playwright</a></li>
+          <li><a href="playwright-recipes.html">Recipes</a></li>
+          <li><a href="tools.html">Tools</a></li>
+          <li class="nav-more">
+            <details>
+              <summary class="nav-more-trigger">More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <ul class="nav-more-menu">
+              <li><a href="white-box.html">White-box</a></li>
+              <li><a href="documents.html">Documents</a></li>
+              <li><a href="troubleshooting.html">Troubleshooting</a></li>
+              <li><a href="checklist.html">Checklist</a></li>
+              <li><a href="links.html">Links</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="text" placeholder="ค้นหาทั้งเว็บ..." aria-label="ค้นหาทั้งเว็บ" />
+        </label>
+        <button id="theme-toggle" class="theme-toggle" aria-label="สลับโหมดมืด" title="สลับโหมดมืด">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        </button>
+        <a href="index.html#quickstart" class="btn-pill btn-dark nav-cta"><span class="btn-icon" aria-hidden="true">→</span> Quick Start</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main id="main-content" class="main-content">
+      <div class="page-head">
+        <p class="eyebrow">QA Playbook <span class="eyebrow-index">(01)</span></p>
+        <h1 class="page-title">Fundamentals / พื้นฐานการทดสอบซอฟต์แวร์</h1>
+        <p class="page-lede">QA vs QC vs Testing, Verification vs Validation, principles, levels, types, lifecycle, metrics</p>
+      </div>
+
+      <section id="f-1" data-searchable>
+        <h2 id="f-1-1">1. Testing vs QA vs QC และ V vs V</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>มิติ</th><th>Testing</th><th>QA</th><th>QC</th></tr></thead>
+            <tbody>
+              <tr><td>บทบาท</td><td>รู้ว่ามี bug / ไม่มี bug</td><td>กลไก/กระบวนการพัฒนาซอฟต์ให้มีคุณภาพ</td><td>ตรวจสอบคุณภาพตอน develop</td></tr>
+              <tr><td>เป้าหมาย</td><td>Find defects</td><td>Quality culture / process</td><td>Verify conformance</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Verification vs Validation</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>มิติ</th><th>Verification</th><th>Validation</th></tr></thead>
+            <tbody>
+              <tr><td>คำว่า</td><td>สิ่งที่สร้างถูกต้องตาม spec หรือไม่</td><td>สร้างของที่ผู้ใช้ต้องการหรือไม่</td></tr>
+              <tr><td>ตัวอย่าง</td><td>Review/test ตาม requirement</td><td>ทดสอบในปีกอบอุ่น (UAT)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>QC = kiểm tra (check) ในวงกว้างกว่า; QA = ระบบการบริหารจัดการ quality</li>
+            <li>Verification = ได้ไหม (built right); Validation = ควรไหม (built right)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-2" data-searchable>
+        <h2 id="f-2-1">2. Error / Defect / Failure และ Defect Life Cycle</h2>
+        <p>ความสัมพันธ์: Error → Defect → Failure</p>
+        <code-block data-lang="text">
+          <div class="code-header"><span class="code-label">error-defect-failure.txt</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Error (Error) = ชั่วคราว/ปัญหาใน process ที่ทำให้ test ไม่ทำงานได้
+Defect (Defect/Bug) = ปัญหาที่พบใน product ที่สร้างจาก error
+Failure (Failure) = การทำงานที่ผิดจากที่คาดไว้ใน runtime</code></pre>
+        </code-block>
+        <h3>Defect Life Cycle</h3>
+        <p>New → Assigned → Open → Fixed → Retest → Verified → Closed (+ Reopened / Rejected / Deferred)</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>หลายระบบอาจเรียกขั้นตอนต่างกัน แต่ concept เดียวกัน</li>
+            <li>Reopened = ทดสอบ retest แล้วยัง fail → ปิดไม่ได้</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-3" data-searchable>
+        <h2 id="f-3-1">3. 7 Testing Principles ของ ISTQB</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>#</th><th>Principle</th><th>คำอธิบายสั้น</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Fit for purpose</td><td>เทคนิคเหมาะกับ context</td></tr>
+              <tr><td>2</td><td>Based on risk</td><td>ออกแบบจากความเสี่ยง</td></tr>
+              <tr><td>3</td><td>Progressive</td><td>ทบทวน/พัฒนาอย่างต่อเนื่อง</td></tr>
+              <tr><td>4</td><td>Feedback</td><td>ผลลัพธ์ไปป้อน process</td></tr>
+              <tr><td>5</td><td>Insurance</td><td>ทดสอบพร้อมกันหลายสำหรับความมั่นใจ</td></tr>
+              <tr><td>6</td><td>Complacency</td><td>ต้องเตือนเรื่องความภูมิใจเกินจริง</td></tr>
+              <tr><td>7</td><td>Prioritization</td><td>จัดลำดับความสำคัญของ test</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>7 ข้อคือแก่นของ ISTQB syllabus</li>
+            <li>ทั้ง 7 ข้อควรอ่าน/ทดสอบในชุดวิชา</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-4" data-searchable>
+        <h2 id="f-4-1">4. SDLC vs STLC และ V-Model</h2>
+        <p>STLC steps: Requirement analysis → Test planning → Test case design → Environment setup → Test execution → Test closure</p>
+        <p>V-Model: ฝั่ง Development จับคู่กับฝั่ง Testing (เทคโนโลยีสำรอง)</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>V-Model แสดงการตรวจสอบทั้งก่อน (dev) และหลัง (test)</li>
+            <li>STLC เชื่อมกับ SDLC แต่เป็นเฉพาะ testing phase</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-5" data-searchable>
+        <h2 id="f-5-1">5. Test Levels และ Test Types</h2>
+        <h3>Test Levels</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Level</th><th>สิ่งที่ทดสอบ</th><th>ผู้ทำ</th></tr></thead>
+            <tbody>
+              <tr><td>Unit</td><td>Unit function/module</td><td>Dev / TDD</td></tr>
+              <tr><td>Integration</td><td>Module ↔ module</td><td>Dev / QA</td></tr>
+              <tr><td>System</td><td>Whole system</td><td>QA</td></tr>
+              <tr><td>Acceptance</td><td>Business expectation</td><td>UAT / Alpha / Beta users</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Test Types (ตารางสั้น)</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Type</th><th>คำจำกัด</th></tr></thead>
+            <tbody>
+              <tr><td>Functional</td><td>Feature ทำงานตาม requirement</td></tr>
+              <tr><td>Performance</td><td>เวลาตอบสนอง/ใช้ทรัพยากร</td></tr>
+              <tr><td>Load</td><td>กับ load จำกัด</td></tr>
+              <tr><td>Stress</td><td>กับภาระสูงสุด</td></tr>
+              <tr><td>Security</td><td>ป้องกันการโจมตี</td></tr>
+              <tr><td>Usability</td><td>ใช้้ง่ายหรือไม่</td></tr>
+              <tr><td>Compatibility</td><td>Browser/device ร่วมใช้</td></tr>
+              <tr><td>Regression</td><td>การเปลี่ยนแปลงใหม่ทำให้เดิมพัง</td></tr>
+              <tr><td>Smoke</td><td>Build sanity หลัก ทดสอบเร็ว</td></tr>
+              <tr><td>Sanity</td><td>Build ใหม่ sanity ลึก</td></tr>
+              <tr><td>Retesting / Confirmation</td><td>ทดสอบซ้ำของ bug ที่ fix</td></tr>
+              <tr><td>Exploratory / Ad-hoc</td><td>ไม่เปิดเผย test case ก่อน</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Smoke = กันระเบิด; Sanity = ตรวจสอบลึกหลัง smoke</li>
+            <li>Regression ≠ Retesting: regression = regression suite; Retesting = retest bug fix</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-6" data-searchable>
+        <h2 id="f-6-1">6. Static vs Dynamic Testing, Black/White/Grey-box, Test Pyramid</h2>
+        <p>Static: Review, Walkthrough, Inspection — Dynamic: execution</p>
+        <p>Black-box: ไม่ดู internal; White-box: ดู internal; Grey-box: ผสม</p>
+        <p>Test Pyramid: Unit สูง → Integration → E2E ต่ำ (เหตุผล: speed, cost)</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Test Pyramid คือหลักของ modern E2E strategy</li>
+            <li>White-box ใช้กับโค้ด/coverage; Black-box ใช้กับ requirement</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-7" data-searchable>
+        <h2 id="f-7-1">7. Manual vs Automation, TDD vs BDD</h2>
+        <p>Manual: เหมาะ exploratory, usability, งาน rare. Automation: regression, repeat.</p>
+        <p>TDD: Red → Green → Refactor. BDD: Given-When-Then + Gherkin (Feature/Scenario/When/Then)</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>BDD ยังใช้ Gherkin + automation (Given-When-Then) ร่วมกันได้</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-8" data-searchable>
+        <h2 id="f-8-1">8. Severity vs Priority และ Quality Attributes</h2>
+        <p>Severity vs Priority: table + 4 cases (High-High, High-Low, Low-High, Low-Low)</p>
+        <p>ISO/IEC 25010: Functional Suitability, Performance Efficiency, Compatibility, Usability, Reliability, Security, Maintainability, Protection</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Severity = อันตรายต่อ user/business; Priority = ความสำคัญใน release</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="f-9" data-searchable>
+        <h2 id="f-9-1">9. Metrics และ Entry/Exit Criteria</h2>
+        <p>Defect density = defects / (LOC or size). DDP = (defects found before release / total defects) × 100. Pass rate = passed / total × 100</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>ทดสอบทั้งระบบต้องมี exit criteria ที่ชัด</li>
+            <li>Suspension/resumption criteria: ระบุเงื่อนไขหยุด/ resume test</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <div>
+        <a class="footer-brand" href="index.html">QA <em>Playbook</em></a>
+        <p>Cheat sheet สำหรับ Software Testing &amp; Quality Assurance + Playwright — อ่านเร็ว เข้าใจไว ใช้ได้จริง</p>
+      </div>
+      <nav class="footer-links" aria-label="ลิงก์ท้ายหน้า">
+        <a href="fundamentals.html">Fundamentals</a>
+        <a href="test-design.html">Test Design</a>
+        <a href="playwright.html">Playwright</a>
+        <a href="playwright-recipes.html">Recipes</a>
+        <a href="tools.html">Tools</a>
+        <a href="checklist.html">Checklist</a>
+        <a href="links.html">Links</a>
+      </nav>
+      <p class="footer-copy">© 2026 QA Playbook · Static site · Made for learners</p>
+    </div>
+  </footer>
+
+  <script>
+    try { hljs.highlightAll(); } catch (e) { /* no-op */ }
+  </script>
+  <script src="assets/search-index.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="QA Playbook - Software Testing and QA + Playwright cheat sheet. Theory, test design, white-box, documents, Playwright UI/API." />
+  <title>QA Playbook - Software Testing &amp; Playwright Cheat Sheet</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a78bfa'/%3E%3Cg fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M32 32c0-8 6-14 14-14 0 8-6 14-14 14Z'/%3E%3Cpath d='M32 32c0-8-6-14-14-14 0 8 6 14 14 14Z'/%3E%3Cpath d='M32 32c8 0 14 6 14 14-8 0-14-6-14-14Z'/%3E%3Cpath d='M32 32c-8 0-14 6-14 14 8 0 14-6 14-14Z'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.4' fill='%23d3f56f'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) { /* no-op */ }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="index.html" class="nav-brand" aria-label="QA Playbook — หน้าแรก">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z"/>
+            <path d="M12 12c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/>
+            <path d="M12 12c3.3 0 6 2.7 6 6-3.3 0-6-2.7-6-6Z"/>
+            <path d="M12 12c-3.3 0-6 2.7-6 6 3.3 0 6-2.7 6-6Z"/>
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="brand-text">QA <em>Playbook</em></span>
+      </a>
+      <nav class="nav-primary" aria-label="เมนูหลัก">
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="fundamentals.html">Fundamentals</a></li>
+          <li><a href="test-design.html">Test Design</a></li>
+          <li><a href="playwright.html">Playwright</a></li>
+          <li><a href="playwright-recipes.html">Recipes</a></li>
+          <li><a href="tools.html">Tools</a></li>
+          <li class="nav-more">
+            <details>
+              <summary class="nav-more-trigger">More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <ul class="nav-more-menu">
+                <li><a href="white-box.html">White-box</a></li>
+                <li><a href="documents.html">Documents</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
+                <li><a href="checklist.html">Checklist</a></li>
+                <li><a href="links.html">Links</a></li>
+                <li><a href="glossary.html">Glossary</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="text" placeholder="ค้นหาทั้งเว็บ..." aria-label="ค้นหาทั้งเว็บ" />
+        </label>
+        <button id="theme-toggle" class="theme-toggle" aria-label="สลับโหมดมืด" title="สลับโหมดมืด">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        </button>
+        <a href="#idx-quickstart" class="btn-pill btn-dark nav-cta"><span class="btn-icon" aria-hidden="true">→</span> Quick Start</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main id="main-content" class="main-content">
+
+      <section id="idx-hero" class="hero-panel" data-searchable>
+        <div class="hero-copy">
+          <p class="hero-eyebrow">QA Playbook <span>(00)</span> <span class="hero-badge">2026 Edition</span></p>
+          <h1 class="hero-title">เข้าใจการทดสอบ<br />ไปพร้อมกับ <em>Playwright</em></h1>
+          <p class="hero-sub">Cheat sheet ครบทั้งทฤษฎี Software Testing, เทคนิคออกแบบเทสต์, White-box และ Playwright — สูตร ตาราง ตัวอย่างโค้ด และเครื่องมือที่ใช้ได้จริง</p>
+          <div class="hero-actions">
+            <a href="#idx-map" class="btn-pill btn-light"><span class="btn-icon" aria-hidden="true">→</span> เริ่มอ่าน</a>
+            <a href="#idx-quickstart" class="btn-pill btn-ghost-light">Quick Start 5 นาที</a>
+          </div>
+          <dl class="hero-stats">
+            <div><dt>12</dt><dd>บทเรียน</dd></div>
+            <div><dt>08</dt><dd>เครื่องมือ</dd></div>
+            <div><dt>16</dt><dd>Recipes</dd></div>
+          </dl>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <svg class="bloom-art" viewBox="0 0 440 440" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="220" cy="208" r="188" stroke="rgba(255,255,255,.22)" stroke-dasharray="2 10"/>
+            <circle cx="220" cy="208" r="146" stroke="rgba(255,255,255,.13)"/>
+            <g stroke="rgba(255,255,255,.42)" stroke-width="1.1">
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(0 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(45 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(90 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(135 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(180 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(225 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(270 220 208)"/>
+              <ellipse cx="220" cy="118" rx="46" ry="90" fill="rgba(255,255,255,.12)" transform="rotate(315 220 208)"/>
+            </g>
+            <g stroke="rgba(211,245,111,.55)" stroke-width="1" fill="rgba(211,245,111,.10)">
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(22.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(67.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(112.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(157.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(202.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(247.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(292.5 220 208)"/>
+              <ellipse cx="220" cy="148" rx="30" ry="60" transform="rotate(337.5 220 208)"/>
+            </g>
+            <circle cx="220" cy="208" r="42" fill="#d3f56f"/>
+            <circle cx="220" cy="208" r="28" stroke="rgba(23,19,31,.22)" stroke-width="1.5"/>
+            <circle cx="220" cy="208" r="6" fill="#17131f"/>
+            <path d="M220 250v100" stroke="rgba(255,255,255,.45)" stroke-width="1.4"/>
+            <path d="M220 316c-40 0-62-22-62-50 32 0 62 20 62 50Z" fill="rgba(211,245,111,.16)" stroke="rgba(211,245,111,.55)" stroke-width="1.2"/>
+            <path d="M220 338c36 0 56-20 56-45-29 0-56 18-56 45Z" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+            <g fill="rgba(255,255,255,.7)">
+              <circle cx="92" cy="120" r="2.4"/>
+              <circle cx="360" cy="98" r="2"/>
+              <circle cx="372" cy="312" r="2.6"/>
+              <circle cx="74" cy="300" r="2"/>
+            </g>
+          </svg>
+          <span class="hero-chip chip-1">Test Design</span>
+          <span class="hero-chip chip-2">Playwright</span>
+          <span class="hero-chip chip-3">Coverage</span>
+          <span class="hero-chip chip-4">API</span>
+        </div>
+      </section>
+
+      <section id="idx-map" data-searchable>
+        <h2 id="map">แผนผังภาพรวมวิชา</h2>
+        <p class="section-lede">เริ่มจากทฤษฎี ไปจนถึงโค้ดที่รันได้จริง — เลือกเส้นทางที่ต้องการแล้วอ่านต่อได้ทันที</p>
+        <div class="cards cards--three">
+          <article class="card">
+            <h3>Fundamentals</h3>
+            <p>QA vs QC, V-Model, principles, levels, types, metrics</p>
+            <a href="fundamentals.html">ไปดู</a>
+          </article>
+          <article class="card">
+            <h3>Test Design (Black-box)</h3>
+            <p>EP, BVA, Decision Table, State Transition, Use Case, Pairwise</p>
+            <a href="test-design.html">ไปดู</a>
+          </article>
+          <article class="card">
+            <h3>White-box</h3>
+            <p>CFG, Coverage, Cyclomatic Complexity, Mutation</p>
+            <a href="white-box.html">ไปดู</a>
+          </article>
+          <article class="card">
+            <h3>Documents</h3>
+            <p>Test Case, Bug Report, Test Plan, RTM</p>
+            <a href="documents.html">ไปดู</a>
+          </article>
+          <article class="card">
+            <h3>Playwright</h3>
+            <p>Syntax, Locator, Assertion, Config, API, CI</p>
+            <a href="playwright.html">ไปดู</a>
+          </article>
+          <article class="card">
+            <h3>Recipes</h3>
+            <p>Login, TodoMVC, Form, Table, Cart, Dialog, API, Mock, Visual, Responsive</p>
+            <a href="playwright-recipes.html">ไปดู</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="idx-quickstart" data-searchable>
+        <h2 id="quickstart">Quick Start Playwright 5 นาที</h2>
+        <p>คำสั่งเรียงลำดับตั้งแต่ติดตั้งถึงเปิด report — ใช้ได้กับ Node.js 22+</p>
+        <code-block data-lang="bash">
+          <div class="code-header"><span class="code-label">terminal</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-bash">npm init playwright@latest
+npx playwright install
+npx playwright test
+npx playwright show-report</code></pre>
+        </code-block>
+        <div class="steps">
+          <div class="step"><span class="step-num">01</span><h3>ติดตั้ง</h3><p>สร้างโปรเจกต์และติดตั้ง browser</p></div>
+          <div class="step"><span class="step-num">02</span><h3>เขียนเทสต์</h3><p>เริ่มจาก smoke test หนึ่งเส้นทาง</p></div>
+          <div class="step"><span class="step-num">03</span><h3>รัน</h3><p>ใช้ UI mode หรือ headless ก็ได้</p></div>
+          <div class="step"><span class="step-num">04</span><h3>ดู report</h3><p>เปิด trace และ screenshot เพื่อ debug</p></div>
+        </div>
+        <p>หรือเปิดหน้า <a href="playwright.html">Playwright</a> เพื่ออ่าน step ทีละขั้น</p>
+      </section>
+
+      <section id="idx-ref" data-searchable>
+        <h2 id="ref">ตารางสรุปสูตร / สิ่งที่ต้องจำ</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>สูตร / เกณฑ์</th><th>ค่า</th></tr></thead>
+            <tbody>
+              <tr><td>V(G) = E − N + 2P</td><td>cyclomatic complexity</td></tr>
+              <tr><td>V(G) = decision nodes + 1</td><td>cyclomatic complexity (structured code)</td></tr>
+              <tr><td>V(G) = regions</td><td>cyclomatic complexity (CFG)</td></tr>
+              <tr><td>Coverage: SC / BC / CC</td><td>(executed/total) × 100</td></tr>
+              <tr><td>Decision table rules</td><td>2^n</td></tr>
+              <tr><td>BVA test values</td><td>min-1, min, min+1, max-1, max, max+1</td></tr>
+              <tr><td>Severity vs Priority</td><td>High-High, High-Low, Low-High, Low-Low</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="idx-pages" data-searchable>
+        <h2 id="pages">การ์ดลิงก์ไปทุกหน้า</h2>
+        <p class="section-lede">ทุกบทมีสารบัญในหน้า, ค้นหา, copy โค้ด และโหมดมืดให้ใช้งาน</p>
+        <div class="cards">
+          <article class="card"><h3>Home</h3><a href="index.html">เปิด</a></article>
+          <article class="card"><h3>Fundamentals</h3><a href="fundamentals.html">เปิด</a></article>
+          <article class="card"><h3>Test Design</h3><a href="test-design.html">เปิด</a></article>
+          <article class="card"><h3>White-box</h3><a href="white-box.html">เปิด</a></article>
+          <article class="card"><h3>Documents</h3><a href="documents.html">เปิด</a></article>
+          <article class="card"><h3>Playwright</h3><a href="playwright.html">เปิด</a></article>
+          <article class="card"><h3>Recipes</h3><a href="playwright-recipes.html">เปิด</a></article>
+          <article class="card"><h3>Tools</h3><a href="tools.html">เปิด</a></article>
+          <article class="card"><h3>Troubleshooting</h3><a href="troubleshooting.html">เปิด</a></article>
+          <article class="card"><h3>Checklist</h3><a href="checklist.html">เปิด</a></article>
+          <article class="card"><h3>Links</h3><a href="links.html">เปิด</a></article>
+          <article class="card"><h3>Glossary</h3><a href="glossary.html">เปิด</a></article>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>static site: เปิดไฟล์ได้เลย หรือใช้ local server</li>
+            <li>มีสูตร/ตาราง/ตัวอย่างที่คำนวณให้ดู พร้อม copy โค้ด</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <div>
+        <a class="footer-brand" href="index.html">QA <em>Playbook</em></a>
+        <p>Cheat sheet สำหรับ Software Testing &amp; Quality Assurance + Playwright — อ่านเร็ว เข้าใจไว ใช้ได้จริง</p>
+      </div>
+      <nav class="footer-links" aria-label="ลิงก์ท้ายหน้า">
+        <a href="fundamentals.html">Fundamentals</a>
+        <a href="test-design.html">Test Design</a>
+        <a href="playwright.html">Playwright</a>
+        <a href="playwright-recipes.html">Recipes</a>
+        <a href="tools.html">Tools</a>
+        <a href="checklist.html">Checklist</a>
+        <a href="links.html">Links</a>
+      </nav>
+      <p class="footer-copy">© 2026 QA Playbook · Static site · Made for learners</p>
+    </div>
+  </footer>
+
+  <script>
+    try { hljs.highlightAll(); } catch (e) { /* no-op */ }
+  </script>
+  <script src="assets/search-index.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
