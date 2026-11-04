@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="White-box testing: Control Flow Graph, coverage types, cyclomatic complexity, basis path, mutation testing." />
+  <title>White-box Testing - QA Playbook</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a78bfa'/%3E%3Cg fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M32 32c0-8 6-14 14-14 0 8-6 14-14 14Z'/%3E%3Cpath d='M32 32c0-8-6-14-14-14 0 8 6 14 14 14Z'/%3E%3Cpath d='M32 32c8 0 14 6 14 14-8 0-14-6-14-14Z'/%3E%3Cpath d='M32 32c-8 0-14 6-14 14 8 0 14-6 14-14Z'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.4' fill='%23d3f56f'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) { /* no-op */ }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css" />
+
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="index.html" class="nav-brand" aria-label="QA Playbook — หน้าแรก">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z"/>
+            <path d="M12 12c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/>
+            <path d="M12 12c3.3 0 6 2.7 6 6-3.3 0-6-2.7-6-6Z"/>
+            <path d="M12 12c-3.3 0-6 2.7-6 6 3.3 0 6-2.7 6-6Z"/>
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="brand-text">QA <em>Playbook</em></span>
+      </a>
+      <nav class="nav-primary" aria-label="เมนูหลัก">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="fundamentals.html">Fundamentals</a></li>
+          <li><a href="test-design.html">Test Design</a></li>
+          <li><a href="playwright.html">Playwright</a></li>
+          <li><a href="playwright-recipes.html">Recipes</a></li>
+          <li><a href="tools.html">Tools</a></li>
+          <li class="nav-more">
+            <details>
+              <summary class="nav-more-trigger active">More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <ul class="nav-more-menu">
+              <li><a href="white-box.html" class="active">White-box</a></li>
+              <li><a href="documents.html">Documents</a></li>
+              <li><a href="troubleshooting.html">Troubleshooting</a></li>
+              <li><a href="checklist.html">Checklist</a></li>
+              <li><a href="links.html">Links</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="text" placeholder="ค้นหาทั้งเว็บ..." aria-label="ค้นหาทั้งเว็บ" />
+        </label>
+        <button id="theme-toggle" class="theme-toggle" aria-label="สลับโหมดมืด" title="สลับโหมดมืด">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        </button>
+        <a href="index.html#quickstart" class="btn-pill btn-dark nav-cta"><span class="btn-icon" aria-hidden="true">→</span> Quick Start</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main id="main-content" class="main-content">
+      <div class="page-head">
+        <p class="eyebrow">QA Playbook <span class="eyebrow-index">(03)</span></p>
+        <h1 class="page-title">White-box Testing, Coverage และ Cyclomatic Complexity</h1>
+        <p class="page-lede">เข้าใจโค้ดฝั่งในเพื่อ design test ที่เข้มแข็ง — ต้องการทั้งความถูกต้องและ efficiency</p>
+      </div>
+
+      <section id="wb-1" data-searchable>
+        <h2 id="wb-1-1">1. Control Flow Graph (CFG)</h2>
+        <p>วิธีวาด: แยก <strong>node</strong> (จุด/จำลอง) และ <strong>edge</strong> (เส้นเชื่อม) จากโค้ด พร้อม region (เขตของ decision)</p>
+        <h3>ตัวอย่างโค้ดสั้น</h3>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">src/adult.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">export function isAdult(age: number): boolean {
+  if (age >= 18) {
+    return true;
+  }
+  return false;
+}</code></pre>
+        </code-block>
+        <h3>CFG (แบบ SVG)</h3>
+        <svg viewBox="0 0 240 140" class="w-full mt-2" role="img" aria-label="Control Flow Graph for isAdult">
+          <rect x="10" y="40" width="50" height="30" fill="#e0e7ff" stroke="#4f46e5" />
+          <text x="35" y="60" font-size="11" text-anchor="middle" fill="#312e81">Start</text>
+          <rect x="80" y="40" width="70" height="30" fill="#fef3c7" stroke="#d97706" />
+          <text x="115" y="60" font-size="11" text-anchor="middle" fill="#78350f">Decision: age &gt;= 18?</text>
+          <rect x="170" y="10" width="60" height="30" fill="#dcfce7" stroke="#16a34a" />
+          <text x="200" y="30" font-size="11" text-anchor="middle" fill="#14532d">true</text>
+          <rect x="170" y="70" width="60" height="30" fill="#fee2e2" stroke="#dc2626" />
+          <text x="200" y="90" font-size="11" text-anchor="middle" fill="#7f1d1d">false</text>
+          <line x1="60" y1="55" x2="75" y2="55" stroke="#4f46e5" stroke-width="2" />
+          <line x1="150" y1="55" x2="168" y2="25" stroke="#4f46e5" stroke-width="2" />
+          <line x1="150" y1="65" x2="168" y2="85" stroke="#4f46e5" stroke-width="2" />
+          <polygon points="166,20 172,25 166,30" fill="#4f46e5" />
+          <polygon points="166,80 172,75 166,70" fill="#4f46e5" />
+        </svg>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Node = จุดเริ่ม/จุด decision/exit, Edge = transition</li>
+            <li>Region = เขตของ decision (true/false path)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="wb-2" data-searchable>
+        <h2 id="wb-2-1">2. Coverage ทุกชนิด</h2>
+        <p>ลำดับความเข้มข้น: Statement &lt; Branch &lt; Condition &lt; Decision/Condition &lt; Multiple Condition &lt; MC/DC &lt; Path</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Coverage type</th><th>นิยาม</th><th>สูตร</th></tr></thead>
+            <tbody>
+              <tr><td>Statement Coverage</td><td>statement ทั้งหมด execute หรือไม่</td><td>SC = (executed / total) × 100</td></tr>
+              <tr><td>Branch Coverage</td><td>ทุก branch true/false ของ decision</td><td>BC = (branches covered / total branches) × 100</td></tr>
+              <tr><td>Condition Coverage</td><td>แต่ละ condition ของ decision มี true และ false</td><td>CC = (covered conditions / total conditions) × 100</td></tr>
+              <tr><td>Decision/Condition (DC)</td><td>branch + condition รวม</td><td>ต้องการทั้ง decision และ condition</td></tr>
+              <tr><td>Multiple Condition (MC)</td><td>ทดสอบ combination ทั้งหมดของ conditions</td><td>จำนวน test = 2^n</td></tr>
+              <tr><td>MC/DC</td><td>ทุก pair ของ conditions ส่งผลต่างกัน</td><td>แก้ compound condition (<code>A &amp;&amp; (B || C)</code>)</td></tr>
+              <tr><td>Path Coverage</td><td>ทุก path ใน CFG</td><td>= จำนวน independent paths</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>ตัวอย่าง MC/DC — <code>A &amp;&amp; (B || C)</code></h3>
+        <p>Primitive conditions: A, B, C → MC/DC ต้องทดสอบ pair (A,B) และ (A,C) ที่ส่งผลต่างกัน</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>A</th><th>B</th><th>C</th><th>A &amp;&amp; (B || C)</th></tr></thead>
+            <tbody>
+              <tr><td>F</td><td>F</td><td>F</td><td>F</td></tr>
+              <tr><td>F</td><td>T</td><td>F</td><td>F</td></tr>
+              <tr><td>T</td><td>F</td><td>F</td><td>F</td></tr>
+              <tr><td>T</td><td>T</td><td>F</td><td>T</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="wb-3" data-searchable>
+        <h2 id="wb-3-1">3. Cyclomatic Complexity</h2>
+        <p>3 สูตรหลัก — ต้องคำนวณซ้ำแล้วเทียบกันทุกครั้ง</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>สูตร</th><th>คำอธิบาย</th></tr></thead>
+            <tbody>
+              <tr><td>V(G) = E − N + 2P</td><td>จำนวน edge (E), node (N), component (P)</td></tr>
+              <tr><td>V(G) = จำนวน decision nodes + 1</td><td>V = (# predicates) + 1</td></tr>
+              <tr><td>V(G) = จำนวน regions</td><td>จำนวน path ใน CFG</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>ตัวอย่างคำนวณที่ตรวจแล้วทั้งสองสูตร (ให้ค่าตรงกัน)</h3>
+        <p>ตัวอย่าง <code>checkDiscount(age)</code> — function ที่มี 2 predicates:</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">src/discount.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">export function checkDiscount(age: number): number {
+  if (age < 18) {
+    return 0;
+  }
+  if (age > 60) {
+    return 0;
+  }
+  return 10;
+}</code></pre>
+        </code-block>
+        <p>คำนวณที่ 1: decision nodes = 2 → V(G) = 2 + 1 = <strong>3</strong></p>
+        <p>คำนวณที่ 2: V(G) = E − N + 2 = 5 − 4 + 2 = <strong>3</strong> ให้ทั้งสองสูตรให้ค่าตรงกัน</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>สูตร E−N+2 ใช้กับ CFG graph; สูตร decision+1 ใช้กับ structured code</li>
+            <li>ทั้งสองต้องให้ค่าตรงกันเมื่อคำนวณจากโค้มเดียวกัน</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="wb-4" data-searchable>
+        <h2 id="wb-4-1">4. Basis Path Testing</h2>
+        <h3>ขั้นตอน</h3>
+        <ol class="list-decimal pl-6 mt-2">
+          <li>หา independent paths จาก V(G)</li>
+          <li>สร้าง test case ให้ครบทุก independent path</li>
+          <li>ใช้ expected results จาก business rules</li>
+        </ol>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Basis paths = minimal set ของ independent paths</li>
+            <li>การออกแบบได้ branch coverage 100% เมื่อ paths ครบ</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="wb-5" data-searchable>
+        <h2 id="wb-5-1">5. ตัวอย่างโจทย์ฝึก + เฉลย (≥3 ข้อ)</h2>
+        <p>แต่ละข้อ: โค้ด → CFG → V(G) → ออกแบบ test case → branch coverage 100%</p>
+
+        <h3>โจทย์ที่ 1 — หาเกรด (Grade)</h3>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">src/grade.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">export function grade(score: number): string {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  return 'F';
+}</code></pre>
+        </code-block>
+        <p>Predicates = 3 → V(G) = 4</p>
+        <p>Independent paths: score &gt;= 90 → A; score &gt;= 80 → B; score &gt;= 70 → C; score &lt; 70 → F (4 paths)</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Test</th><th>Input</th><th>Expected</th></tr></thead>
+            <tbody>
+              <tr><td>T1</td><td>score = 95</td><td>A</td></tr>
+              <tr><td>T2</td><td>score = 85</td><td>B</td></tr>
+              <tr><td>T3</td><td>score = 75</td><td>C</td></tr>
+              <tr><td>T4</td><td>score = 60</td><td>F</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Branch coverage: ทดสอบครบทุก branch → coverage = 100%</p>
+
+        <h3>โจทย์ที่ 2 — ตรวจ Leap Year</h3>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">src/leap.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">export function isLeap(year: number): boolean {
+  if (year % 4 !== 0) return false;
+  if (year % 100 !== 0) return true;
+  if (year % 400 !== 0) return false;
+  return true;
+}</code></pre>
+        </code-block>
+        <p>Predicates = 3 → V(G) = 4; paths: (2024 → true), (2023 → false), (1900 → false), (2000 → true)</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Year</th><th>Expected</th></tr></thead>
+            <tbody>
+              <tr><td>2024</td><td>true (÷4 ✓, ÷100 ✗)</td></tr>
+              <tr><td>2023</td><td>false (÷4 ✗)</td></tr>
+              <tr><td>1900</td><td>false (÷4 ✓, ÷100 ✓, ÷400 ✗)</td></tr>
+              <tr><td>2000</td><td>true (÷4 ✓, ÷100 ✓, ÷400 ✓)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>โจทย์ที่ 3 — Login Check</h3>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">src/login.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">export function loginOk(user: string, pass: string): boolean {
+  if (user === 'admin' && pass === 'secret') return true;
+  if (user.length < 3) return false;
+  return false;
+}</code></pre>
+        </code-block>
+        <p>MC/DC กับ compound condition: จำนวน primitive conditions = 3 (<code>user === 'admin'</code>, <code>pass === 'secret'</code>, <code>user.length &gt; 3</code>) → V(G) = 4</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>ทุกโจทย์ฝึกให้ V(G) ทุกสูตร (decision+1, regions) ให้ค่าตรงกัน</li>
+            <li>branch coverage 100% มักเป็นสิ่งตั้งต้นของ basis path test</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="wb-6" data-searchable>
+        <h2 id="wb-6-1">6. Mutation Testing</h2>
+        <p>Mutant = การแก้ไขเล็กน้อยในโค้ด; Killed = test ที่ทำให้ mutant fail; Mutation score = killed / total</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Mutation score ยิ่งสูง (≈100%) แสดงว่า tests ยังจับ bug ได้ดี</li>
+            <li>Mutation testing ใช้ compute มาก → ใช้กับ critical path เท่านั้นใน CI</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <div>
+        <a class="footer-brand" href="index.html">QA <em>Playbook</em></a>
+        <p>Cheat sheet สำหรับ Software Testing &amp; Quality Assurance + Playwright — อ่านเร็ว เข้าใจไว ใช้ได้จริง</p>
+      </div>
+      <nav class="footer-links" aria-label="ลิงก์ท้ายหน้า">
+        <a href="fundamentals.html">Fundamentals</a>
+        <a href="test-design.html">Test Design</a>
+        <a href="playwright.html">Playwright</a>
+        <a href="playwright-recipes.html">Recipes</a>
+        <a href="tools.html">Tools</a>
+        <a href="checklist.html">Checklist</a>
+        <a href="links.html">Links</a>
+      </nav>
+      <p class="footer-copy">© 2026 QA Playbook · Static site · Made for learners</p>
+    </div>
+  </footer>
+
+  <script>
+    try { hljs.highlightAll(); } catch (e) { /* no-op */ }
+  </script>
+  <script src="assets/search-index.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

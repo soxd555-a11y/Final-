@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Playwright recipes: login, TodoMVC, form validation, table, cart flow, dropdown, file, dialog, multi-tab, drag-drop, API CRUD, mock, visual regression, responsive, a11y, wait strategies." />
+  <title>Playwright Recipes - QA Playbook</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a78bfa'/%3E%3Cg fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M32 32c0-8 6-14 14-14 0 8-6 14-14 14Z'/%3E%3Cpath d='M32 32c0-8-6-14-14-14 0 8 6 14 14 14Z'/%3E%3Cpath d='M32 32c8 0 14 6 14 14-8 0-14-6-14-14Z'/%3E%3Cpath d='M32 32c-8 0-14 6-14 14 8 0 14-6 14-14Z'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.4' fill='%23d3f56f'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) { /* no-op */ }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css" />
+
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="index.html" class="nav-brand" aria-label="QA Playbook — หน้าแรก">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z"/>
+            <path d="M12 12c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/>
+            <path d="M12 12c3.3 0 6 2.7 6 6-3.3 0-6-2.7-6-6Z"/>
+            <path d="M12 12c-3.3 0-6 2.7-6 6 3.3 0 6-2.7 6-6Z"/>
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="brand-text">QA <em>Playbook</em></span>
+      </a>
+      <nav class="nav-primary" aria-label="เมนูหลัก">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="fundamentals.html">Fundamentals</a></li>
+          <li><a href="test-design.html">Test Design</a></li>
+          <li><a href="playwright.html">Playwright</a></li>
+          <li><a href="playwright-recipes.html" class="active">Recipes</a></li>
+          <li><a href="tools.html">Tools</a></li>
+          <li class="nav-more">
+            <details>
+              <summary class="nav-more-trigger">More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <ul class="nav-more-menu">
+              <li><a href="white-box.html">White-box</a></li>
+              <li><a href="documents.html">Documents</a></li>
+              <li><a href="troubleshooting.html">Troubleshooting</a></li>
+              <li><a href="checklist.html">Checklist</a></li>
+              <li><a href="links.html">Links</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="text" placeholder="ค้นหาทั้งเว็บ..." aria-label="ค้นหาทั้งเว็บ" />
+        </label>
+        <button id="theme-toggle" class="theme-toggle" aria-label="สลับโหมดมืด" title="สลับโหมดมืด">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        </button>
+        <a href="index.html#quickstart" class="btn-pill btn-dark nav-cta"><span class="btn-icon" aria-hidden="true">→</span> Quick Start</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main id="main-content" class="main-content">
+      <div class="page-head">
+        <p class="eyebrow">QA Playbook <span class="eyebrow-index">(06)</span></p>
+        <h1 class="page-title">Playwright Recipes</h1>
+        <p class="page-lede">สูตรโค้ด Playwright สำเร็จตามสถานการณ์ — โจทย์ → โค้ดเต็ม copy ได้</p>
+      </div>
+
+      <section id="rec-1" data-searchable>
+        <h2 id="rec-1-title">1. ทดสอบ Login (data-driven)</h2>
+        <p>โจทย์: ทดสอบ login สำเร็จ / รหัสผ่านผิด / ช่องว่าง บน <a href="https://www.saucedemo.com" target="_blank" rel="noopener noreferrer">https://www.saucedemo.com</a></p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/login.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test.describe('Login', () => {
+  const users = [
+    { username: 'standard_user', password: 'secret_sauce', valid: true },
+    { username: 'standard_user', password: 'wrong', valid: false },
+  ];
+
+  for (const u of users) {
+    test(`login - ${u.username} - ${u.valid ? 'valid' : 'invalid'}`, async ({ page }) => {
+      await page.goto('https://www.saucedemo.com');
+      await page.getByPlaceholder('Username').fill(u.username);
+      await page.getByPlaceholder('Password').fill(u.password);
+      await page.getByRole('button', { name: /login/i }).click();
+
+      if (u.valid) {
+        await expect(page).toHaveURL(/inventory/);
+      } else {
+        await expect(page.getByText('Username and password do not match')).toBeVisible();
+      }
+    });
+  }
+});</code></pre>
+        </code-block>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>ใช้ array + for...of ทำ data-driven test</li>
+            <li>ช่องว่าง: ใช้ fill('') หรือ clear() ก่อนกรอก</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="rec-2" data-searchable>
+        <h2 id="rec-2-title">2. ทดสอบ TodoMVC</h2>
+        <p>โจทย์: เพิ่ม / ทำเครื่องหมายเสร็จ / แก้ไข / ลบ / filter บน <a href="https://demo.playwright.dev/todomvc" target="_blank" rel="noopener noreferrer">https://demo.playwright.dev/todomvc</a></p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/todomvc.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('TodoMVC add / complete / edit / delete / filter', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/todomvc');
+  const input = page.getByPlaceholder('What needs to be done?');
+
+  await input.fill('Buy milk');
+  await input.press('Enter');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Buy milk' })).toHaveCount(1);
+
+  const item = page.getByRole('listitem').filter({ hasText: 'Buy milk' });
+  await item.getByRole('checkbox').check();
+  await expect(item).toHaveClass(/completed/);
+
+  await item.getByContent('Buy milk').dblclick();
+  await item.getByRole('textbox').fill('Buy oat milk');
+  await item.keyboard.press('Enter');
+  await expect(page.getByText('Buy oat milk')).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'Delete' }).click();
+  await expect(page.getByText('Buy oat milk')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Active' }).click();
+  await expect(page.getByRole('listitem')).toHaveCount(0);
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-3" data-searchable>
+        <h2 id="rec-3-title">3. ทดสอบ Form Validation</h2>
+        <p>โจทย์: ช่องว่าง / อีเมลผิดรูปแบบ / ขอบเขต BVA ของตัวเลข — เชื่อมกับเทคนิคใน <code>test-design.html</code></p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/form.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('signup form validation', async ({ page }) => {
+  await page.goto('https://example.com/signup');
+
+  // 1. ช่องว่าง
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.getByText('กรุณากรอกข้อมูลให้ครบถ้วน')).toBeVisible();
+
+  // 2. อีเมลผิดรูปแบบ
+  await page.getByLabel('Email').fill('not-an-email');
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.getByText('รูปแบบอีเมลไม่ถูกต้อง')).toBeVisible();
+
+  // 3. BVA: ตัวเลขอย่างอายุ 17 / 18 / 19 / 59 / 60 / 61
+  for (const age of [17, 18, 19, 59, 60, 61]) {
+    await page.getByLabel('Age').fill(String(age));
+    await page.getByRole('button', { name: 'Submit' }).click();
+    const ok = age >= 18 && age <= 60;
+    await expect(page.getByRole('alert')).toHaveText(ok ? 'ok' : 'invalid');
+  }
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-4" data-searchable>
+        <h2 id="rec-4-title">4. ทดสอบตาราง</h2>
+        <p>โจทย์: นับแถว / ดึงค่าของคอลัมน์ / sort</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/table.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('users table: count rows, read cell, sort', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/users');
+
+  const rows = page.getByRole('row');
+  await expect(rows).toHaveCount(4); // header + 3 users
+
+  const firstUser = page.getByRole('row').nth(1);
+  await expect(firstUser.getByRole('cell').nth(2)).toHaveText('Alice');
+
+  await page.getByRole('columnheader', { name: 'Age' }).click();
+  await expect(page.getByRole('row').nth(1).getByRole('cell').nth(2)).toHaveText('30');
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-5" data-searchable>
+        <h2 id="rec-5-title">5. ทดสอบ Shopping Cart Flow (saucedemo)</h2>
+        <p>โจทย์: เพิ่มสินค้า → ตรวจจำนวนใน badge → checkout บน <a href="https://www.saucedemo.com" target="_blank" rel="noopener noreferrer">https://www.saucedemo.com</a></p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/cart.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('add to cart then checkout', async ({ page }) => {
+  await page.goto('https://www.saucedemo.com');
+
+  const addButtons = page.getByRole('button', { name: /add to cart/i });
+  await addButtons.first().click();
+  const badge = page.locator('.shopping-cart-badge');
+  await expect(badge).toHaveText('1');
+
+  await page.getByRole('link', { name: /cart/i }).click();
+  await expect(page).toHaveURL(/cart/);
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-6" data-searchable>
+        <h2 id="rec-6-title">6. ทดสอบ Dropdown / Checkbox / Radio / Date Picker</h2>
+        <p>โจทย์: การเลือกตัวเลือกใน dropdown / checkbox / radio / date</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/form-controls.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('form controls', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/form');
+
+  await page.getByLabel('Country').selectOption('TH');
+  await page.getByLabel('Interests').check(['music', 'sports']);
+  await page.getByLabel('Gender').radio('female');
+  await page.getByLabel('Birthday').fill('2000-01-31');
+
+  await expect(page.getByLabel('Country')).toHaveValue('TH');
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-7" data-searchable>
+        <h2 id="rec-7-title">7. ทดสอบ File Upload / Download</h2>
+        <p>โจทย์: upload file / download file</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/files.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('upload and download', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/upload');
+
+  const fileChooserPromise = page.waitForEvent('filechooser');
+  await page.getByLabel('Upload file').click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles('/path/to/report.pdf');
+
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download' }).click();
+  const download = await downloadPromise;
+  await download.saveAs('/tmp/report.pdf');
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-8" data-searchable>
+        <h2 id="rec-8-title">8. ทดสอบ Alert / Confirm / Prompt Dialog</h2>
+        <p>โจทย์: จัดการ dialog</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/dialogs.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('alert / confirm / prompt', async ({ page }) => {
+  page.on('dialog', async (dialog) => {
+    if (dialog.type() === 'alert') {
+      await dialog.accept();
+    } else if (dialog.type() === 'confirm') {
+      await dialog.accept();
+    } else if (dialog.type() === 'prompt') {
+      await dialog.accept('my answer');
+    }
+  });
+
+  await page.goto('https://demo.playwright.dev/dialog');
+  await page.getByRole('button', { name: 'Alert' }).click();
+  await page.getByRole('button', { name: 'Confirm' }).click();
+  await page.getByRole('button', { name: 'Prompt' }).click();
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-9" data-searchable>
+        <h2 id="rec-9-title">9. ทดสอบหลายแท็บ / Popup / iframe</h2>
+        <p>โจทย์: เปิดแท็บใหม่ / popup / iframe</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/multipage.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('new tab and iframe', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/tabs');
+
+  const popupPromise = context.waitForEvent('page');
+  const context = page.context();
+  // หรือ: const [popup] = await Promise.all([context.waitForEvent('page'), page.getByRole('button', { name: 'Open tab' }).click()]);
+  const popup = await popupPromise;
+  await popup.waitForLoadState('domcontentloaded');
+
+  const frame = page.frameLocator('iframe#frame');
+  await frame.getByRole('heading', { name: 'Inside frame' }).waitFor();
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-10" data-searchable>
+        <h2 id="rec-10-title">10. Hover / Drag &amp; Drop / Keyboard Shortcut</h2>
+        <p>โจทย์: hover / drag / keyboard</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/advanced-actions.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('hover, drag and keyboard', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/dragdrop');
+
+  const source = page.getByRole('heading', { name: 'Source' });
+  const target = page.getByRole('heading', { name: 'Target' });
+  await source.hover();
+  await source.dragTo(target);
+  await expect(target).toHaveText(/moved/i);
+
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-11" data-searchable>
+        <h2 id="rec-11-title">11. API Test CRUD + API + UI รวมกัน</h2>
+        <p>โจทย์: CRUD กับ public API (jsonplaceholder) และผสม API + UI</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/api.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('API CRUD on jsonplaceholder', async ({ request }) => {
+  const create = await request.post('https://jsonplaceholder.typicode.com/posts', { data: { title: 'T', body: 'B', userId: 1 } });
+  expect(create.ok()).toBeTruthy();
+  const created = await create.json();
+  const get = await request.get(`/posts/${created.id}`);
+  expect((await get.json()).title).toBe('T');
+  const del = await request.delete(`/posts/${created.id}`);
+  expect(del.status()).toBe(200);
+});
+
+test('API + UI: create todo via API then verify in UI', async ({ page, request }) => {
+  const api = await request.post('https://api.example.com/todos', { data: { title: 'Write spec' } });
+  const todo = await api.json();
+  await page.goto('https://demo.playwright.dev/todomvc');
+  await page.getByPlaceholder('What needs to be done?').fill(todo.title);
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('listitem').filter({ hasText: todo.title })).toHaveCount(1);
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-12" data-searchable>
+        <h2 id="rec-12-title">12. Mock API Response และจำลอง Error 500</h2>
+        <p>โจทย์: mock response / จำลง error 500 แล้วตรวจ UI แสดง error</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/mock.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/**', async (route) => {
+    if (route.request().url().includes('/api/orders')) {
+      await route.fulfill({ status: 500, body: JSON.stringify({ error: 'server error' }) });
+    } else {
+      await route.continue();
+    }
+  });
+});
+
+test('UI shows error on API 500', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev/checkout');
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.getByRole('alert')).toContainText('เชื่อมต่อไม่สำเร็จ');
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-13" data-searchable>
+        <h2 id="rec-13-title">13. Visual Regression ด้วย toHaveScreenshot</h2>
+        <p>โจทย์: เปรียบเทียบ screenshot</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/visual.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('homepage screenshot', async ({ page }) => {
+  await page.goto('https://playwright.dev');
+  await expect(page).toHaveScreenshot('homepage.png');
+});
+
+// รันครั้งแรกเพื่อสร้าง snapshot: npx playwright test --update-snapshots
+// รันซ้ำเพื่อเทียบ: npx playwright test</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-14" data-searchable>
+        <h2 id="rec-14-title">14. Responsive Test (viewport / mobile emulation)</h2>
+        <p>โจทย์: ทดสอบหน้าร้านบน mobile viewport</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/responsive.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect, devices } from '@playwright/test';
+
+test.use({ ...devices['Pixel 5'] });
+
+test('mobile viewport renders hero', async ({ page }) => {
+  await page.goto('https://www.saucedemo.com');
+  await expect(page.getByRole('heading', { name: /saucedemo/i })).toBeVisible();
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-15" data-searchable>
+        <h2 id="rec-15-title">15. Accessibility Check เบื้องต้น</h2>
+        <p>โจทย์: ใช้ <code>getByRole</code> เป็นตัวตรวจ + ทางเลือก <code>@axe-core/playwright</code></p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/a11y.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('a11y: all pages have accessible buttons', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev');
+  const buttons = page.getByRole('button');
+  await expect(buttons.first()).toBeVisible();
+  // หรือ: npm i -D @axe-core/playwright แล้วใช้ AxeBuilder
+});</code></pre>
+        </code-block>
+      </section>
+
+      <section id="rec-16" data-searchable>
+        <h2 id="rec-16-title">16. Wait Strategies</h2>
+        <p>โจทย์: เมื่อไหร่ใช้ <code>waitForSelector</code>, <code>waitForURL</code>, <code>waitForResponse</code>, <code>waitForLoadState</code> — เทียบกับ auto-wait</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tests/waiting.spec.ts</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">import { test, expect } from '@playwright/test';
+
+test('wait strategies', async ({ page }) => {
+  await page.goto('https://demo.playwright.dev');
+  await page.waitForSelector('#content');          // เวลาเฉพาะ เรื่อว element
+  await page.waitForURL('**/some-page');         // เวลาเฉพาะ เรื่อว URL
+  const apiPromise = page.waitForResponse('**/api/user');
+  await page.getByRole('button', { name: 'Load' }).click();
+  const response = await apiPromise;
+  expect(response.status()).toBe(200);
+
+  await page.waitForLoadState('networkidle');
+});</code></pre>
+        </code-block>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Default: web-first assertions ทำ auto-wait — ไม่ต้อง manual wait</li>
+            <li>ใช้ waitFor* เฉพาะต่อกรณีที่ต้องการความแม่นยำสูง</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="rec-final" data-searchable>
+        <h2 id="rec-final-title">ปรับสูตรให้เข้ากับโจทย์สอบ</h2>
+        <p>ก่อนนำ recipe มาใช้ในชุดทดสอบจริง ตรวจสอบ: URL ของ app ที่ใช้, locator ที่ทนทาน (data-testid / role / label), ข้อมูลทดสอบ (test data), expected result</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <div>
+        <a class="footer-brand" href="index.html">QA <em>Playbook</em></a>
+        <p>Cheat sheet สำหรับ Software Testing &amp; Quality Assurance + Playwright — อ่านเร็ว เข้าใจไว ใช้ได้จริง</p>
+      </div>
+      <nav class="footer-links" aria-label="ลิงก์ท้ายหน้า">
+        <a href="fundamentals.html">Fundamentals</a>
+        <a href="test-design.html">Test Design</a>
+        <a href="playwright.html">Playwright</a>
+        <a href="playwright-recipes.html">Recipes</a>
+        <a href="tools.html">Tools</a>
+        <a href="checklist.html">Checklist</a>
+        <a href="links.html">Links</a>
+      </nav>
+      <p class="footer-copy">© 2026 QA Playbook · Static site · Made for learners</p>
+    </div>
+  </footer>
+
+  <script>
+    try { hljs.highlightAll(); } catch (e) { /* no-op */ }
+  </script>
+  <script src="assets/search-index.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

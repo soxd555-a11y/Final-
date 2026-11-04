@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Black-box test design techniques: Equivalence Partitioning, Boundary Value Analysis, Decision Table, State Transition, Use Case, Pairwise, Error Guessing, Cause-Effect Graph." />
+  <title>Test Design - QA Playbook</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a78bfa'/%3E%3Cg fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M32 32c0-8 6-14 14-14 0 8-6 14-14 14Z'/%3E%3Cpath d='M32 32c0-8-6-14-14-14 0 8 6 14 14 14Z'/%3E%3Cpath d='M32 32c8 0 14 6 14 14-8 0-14-6-14-14Z'/%3E%3Cpath d='M32 32c-8 0-14 6-14 14 8 0 14-6 14-14Z'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.4' fill='%23d3f56f'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (error) { /* no-op */ }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css" />
+
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
+
+  <header class="navbar">
+    <div class="nav-inner">
+      <button id="menu-toggle" class="menu-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="index.html" class="nav-brand" aria-label="QA Playbook — หน้าแรก">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z"/>
+            <path d="M12 12c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/>
+            <path d="M12 12c3.3 0 6 2.7 6 6-3.3 0-6-2.7-6-6Z"/>
+            <path d="M12 12c-3.3 0-6 2.7-6 6 3.3 0 6-2.7 6-6Z"/>
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="brand-text">QA <em>Playbook</em></span>
+      </a>
+      <nav class="nav-primary" aria-label="เมนูหลัก">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="fundamentals.html">Fundamentals</a></li>
+          <li><a href="test-design.html" class="active">Test Design</a></li>
+          <li><a href="playwright.html">Playwright</a></li>
+          <li><a href="playwright-recipes.html">Recipes</a></li>
+          <li><a href="tools.html">Tools</a></li>
+          <li class="nav-more">
+            <details>
+              <summary class="nav-more-trigger">More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <ul class="nav-more-menu">
+              <li><a href="white-box.html">White-box</a></li>
+              <li><a href="documents.html">Documents</a></li>
+              <li><a href="troubleshooting.html">Troubleshooting</a></li>
+              <li><a href="checklist.html">Checklist</a></li>
+              <li><a href="links.html">Links</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search-input" type="text" placeholder="ค้นหาทั้งเว็บ..." aria-label="ค้นหาทั้งเว็บ" />
+        </label>
+        <button id="theme-toggle" class="theme-toggle" aria-label="สลับโหมดมืด" title="สลับโหมดมืด">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+        </button>
+        <a href="index.html#quickstart" class="btn-pill btn-dark nav-cta"><span class="btn-icon" aria-hidden="true">→</span> Quick Start</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main id="main-content" class="main-content">
+      <div class="page-head">
+        <p class="eyebrow">QA Playbook <span class="eyebrow-index">(02)</span></p>
+        <h1 class="page-title">Test Design เทคนิคการทดสอบ</h1>
+        <p class="page-lede">Black-box testing techniques — นิยาม ขั้นตอน คำนวณ และตัวอย่าง test case</p>
+      </div>
+
+      <section id="td-overview" data-searchable>
+        <h2 id="td-0">ภาพรวมเทคนิค</h2>
+        <p>8 เทคนิคหลักของ Black-box testing สำหรับ design test case โดยแต่ละเทคนิคมีโครงเดียวกัน: <strong>นิยาม → ขั้นตอนทำ → ตัวอย่างคำนวณทีละบรรทัด → ตาราง test case → ข้อควรระวัง</strong></p>
+        <div class="cards cards--plain mt-4">
+          <div class="card"><h3>1. Equivalence Partitioning (EP)</h3><p>แบ่ง input เป็น group ของ equivalent values</p></div>
+          <div class="card"><h3>2. Boundary Value Analysis (BVA)</h3><p>ทดสอบค่าขอบ (boundary) ใกล้ min/max</p></div>
+          <div class="card"><h3>3. Decision Table</h3><p>แปล rules เป็น conditions/actions</p></div>
+          <div class="card"><h3>4. State Transition</h3><p>ออกแบบ state diagram + transition</p></div>
+          <div class="card"><h3>5. Use Case</h3><p>main / alternative / exception flow</p></div>
+          <div class="card"><h3>6. Pairwise</h3><p>test ทุกชุด pairwise</p></div>
+          <div class="card"><h3>7. Error Guessing</h3><p>คาดการณ์ error จากผู้ใช้/โค้ด</p></div>
+          <div class="card"><h3>8. Cause-Effect</h3><p>แบ่ง cause → effect</p></div>
+        </div>
+      </section>
+
+      <section id="td-ep" data-searchable>
+        <h2 id="td-1">1. Equivalence Partitioning (EP)</h2>
+        <h3>นิยาม</h3>
+        <p>แบ่ง domain ของ input เป็นกลุ่ม equivalent (ซ้ำปฏิบัติได้กัน) แล้ว select ตัวแทนต่อ group</p>
+        <h3>ขั้นตอนทำ</h3>
+        <ol class="list-decimal pl-6 mt-2">
+          <li>ระบุค่าที่ถือว่า valid / invalid</li>
+          <li>แบ่งเป็น partition ย่อย</li>
+          <li>เลือกตัวแทน 1 ค่าต่อ partition</li>
+          <li>เทสคนั้นกับทุก partition</li>
+        </ol>
+        <h3>ตัวอย่างคำนวณ — ฟอร์มสมัครสมาชิก (อายุ 18–60 ปี)</h3>
+        <p>Domain: [18, 60] (valid), [−∞, 17.99] ∪ [60.01, ∞] (invalid) → 3 partitions</p>
+        <code-block data-lang="text">
+          <div class="code-header"><span class="code-label">EP</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-text">Partitions:
+  P1: valid        -> ตัวแทน: 18 (min)
+  P2: invalid (low) -> ตัวแทน: 17 (min-1)
+  P3: invalid (high)-> ตัวแทน: 61 (max+1)</code></pre>
+        </code-block>
+        <h3>ตาราง Test Case (สมมุทั้ง 3)</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Test Case</th><th>Input</th><th>Expected</th></tr></thead>
+            <tbody>
+              <tr><td>TC-EP-01</td><td>age = 18</td><td>ผ่าน (valid)</td></tr>
+              <tr><td>TC-EP-02</td><td>age = 17</td><td>fail (invalid &lt; min)</td></tr>
+              <tr><td>TC-EP-03</td><td>age = 61</td><td>fail (invalid &gt; max)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>EP ลดจำนวน test case แต่ครอบคลุม valid/invalid</li>
+            <li>เลือกตัวแทน 1 ค่าต่อ partition (เช่น min/max หรือค่าที่อยู่กลาง)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-bva" data-searchable>
+        <h2 id="td-2">2. Boundary Value Analysis (BVA)</h2>
+        <h3>นิยาม</h3>
+        <p>ทดสอบค่าขอบใกล้ขีดจุดเปลี่ยนค่า (boundary) — 2-value หรือ 3-value style</p>
+        <h3>ขั้นตอนทำ (3-value style)</h3>
+        <ol class="list-decimal pl-6 mt-2">
+          <li>ระบุค่าใกล้ขอบ: min−1, min, min+1, max−1, max, max+1</li>
+          <li>คำนวณ expected จากกฎของระบบ</li>
+          <li>เทสแต่ละค่า</li>
+        </ol>
+        <h3>ตัวอย่างคำนวณ — อายุ 18–60 ปี (BVA ต้องการให้ได้ 17, 18, 19, 59, 60, 61)</h3>
+        <p>คำนวณซ้ำ 2 วิธี: (1) ใช้ list ค่าขอบ hand-calc, (2) ใช้ <code>generateBVA(min, max)</code> จาก tools.js</p>
+        <code-block data-lang="ts">
+          <div class="code-header"><span class="code-label">tools.js</span><button class="copy-btn">Copy</button></div>
+          <pre><code class="language-ts">QA.generateBVA(18, 60);
+// → values: [17, 18, 19, 59, 60, 61] (min-1, min, min+1, max-1, max, max+1)</code></pre>
+        </code-block>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>ค่าทดสอบ</th><th>Expected</th><th>หมายเหตุ</th></tr></thead>
+            <tbody>
+              <tr><td>17</td><td>fail (invalid &lt; 18)</td><td>min−1</td></tr>
+              <tr><td>18</td><td>pass</td><td>min</td></tr>
+              <tr><td>19</td><td>pass</td><td>min+1</td></tr>
+              <tr><td>59</td><td>pass</td><td>max−1</td></tr>
+              <tr><td>60</td><td>pass</td><td>max</td></tr>
+              <tr><td>61</td><td>fail (invalid &gt; 60)</td><td>max+1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>ใส่ค่า min−1 / max+1 เสมอ เพราะ bug มักอยู่ใกล้ขอบ</li>
+            <li>Robust BVA เพิ่มค่าที่ห่างขอบ เช่น min−2, max+2</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-dec" data-searchable>
+        <h2 id="td-3">3. Decision Table Testing</h2>
+        <h3>นิยาม</h3>
+        <p>แปล business rules เป็นตาราง conditions (C) → actions (D)</p>
+        <h3>ตัวอย่าง — ส่วนลด (discount) ตามประเภทสมาชิก + ยอดซื้อ</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Condition</th><th>C1</th><th>C2</th></tr></thead>
+            <tbody>
+              <tr><td>Action</td><td>ส่วนลด (Discount)</td><td>ส่วนลด (Discount)</td></tr>
+              <tr><td>Rule 1</td><td>C1=T ∧ C2=T</td><td>15%</td></tr>
+              <tr><td>Rule 2</td><td>C1=T ∧ C2=F</td><td>5%</td></tr>
+              <tr><td>Rule 3</td><td>C1=F ∧ C2=T</td><td>10%</td></tr>
+              <tr><td>Rule 4</td><td>C1=F ∧ C2=F</td><td>0%</td></tr>
+            </tbody>
+            <caption class="sr-only">ตัวอย่างตารางลดส่วน Discount แบบ Decision Table</caption>
+          </table>
+        </div>
+        <p>จำนวน rules = 2^n (n = จำนวน conditions) → นี่คือ <strong>2<sup>n</sup></strong></p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Collapse rules ที่ action ต่างกันต้องมี condition เดียวกันให้รวมกัน</li>
+            <li>Rule count = 2^n — ถ้า n สูงอาจไม่มีประโยชน์ ควร collapse</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-state" data-searchable>
+        <h2 id="td-4">4. State Transition Testing</h2>
+        <h3>นิยาม</h3>
+        <p>ออกแบบ state diagram ของโมเดล แล้ว transition table (รวม invalid transition)</p>
+        <h3>ตัวอย่าง — ล็อกอินผิด 3 ครั้งแล้วบัญชีถูกล็อก</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>From</th><th>Event</th><th>To</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Locked</td><td>Login success</td><td>Unlocked</td><td>เข้าสู่ระบบได้</td></tr>
+              <tr><td>Unlocked</td><td>Login fail ×3</td><td>Locked</td><td>ถูกล็อก</td></tr>
+              <tr><td>Locked</td><td>Login fail</td><td>Locked</td><td>ไม่เปลี่ยน state</td></tr>
+              <tr><td>Locked</td><td>Reset password</td><td>Locked</td><td>Invalid transition (invalid)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>คำนวณ coverage ระดับ 0-switch</h3>
+        <p>จำนวน valid transitions / จำนวน valid transitions + invalid transitions</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>ควรทดสอบทุก state และทุก transition</li>
+            <li>invalid transition ควรมี test case แยกเพราะอาจไม่ถูก handle</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-use" data-searchable>
+        <h2 id="td-5">5. Use Case Testing</h2>
+        <h3>นิยาม</h3>
+        <p>แปล use case เป็น happy path / alternative flow / exception flow</p>
+        <h3>ตัวอย่าง — การสมัครสมาชิก</h3>
+        <p>Main flow: กรอกข้อมูล → submit → ระบบสร้างบัญชี</p>
+        <p>Alternative flow: อีเมลซ้ำ → แจ้งข้อมูลผู้ใช้เดิม</p>
+        <p>Exception flow: รหัสผ่านยาวเกิน 16 ตัว → บล็ก/แจ้ง error</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>แยก happy / alternative / exception ชัดเจน</li>
+            <li>ทุก exception flow ควรมี expected behavior</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-pair" data-searchable>
+        <h2 id="td-6">6. Pairwise / Combinatorial Testing</h2>
+        <h3>นิยาม</h3>
+        <p>test ทุก pairwise combination ของ factors เพื่อพัฒนาเคสที่อาจพลาด</p>
+        <h3>ตัวอย่าง — Browser × OS × Language</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>Browser</th><th>OS</th><th>Language</th></tr></thead>
+            <tbody>
+              <tr><td>Chrome</td><td>Windows</td><td>th</td></tr>
+              <tr><td>Chrome</td><td>Windows</td><td>en</td></tr>
+              <tr><td>Chrome</td><td>macOS</td><td>th</td></tr>
+              <tr><td>Firefox</td><td>Windows</td><td>en</td></tr>
+              <tr><td>Safari</td><td>macOS</td><td>th</td></tr>
+              <tr><td>Safari</td><td>macOS</td><td>en</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>ลดจำนวนเคสได้โดยการ pairwise — เช่น กินเคสที่ "อาจไม่คุกคาม" แต่อาจมี interaction</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Pairwise กว่า exhaustive testing มากสำหรับ factor หลายตัว</li>
+            <li>ใช้สูตร reduction เช่น IPO (In-Parameter-Order) หากต้องการลดจำนวน</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-err" data-searchable>
+        <h2 id="td-7">7. Error Guessing / Exploratory Testing</h2>
+        <h3>นิยาม</h3>
+        <p>ผู้เชี่ยวชาญคาด error จากลำดับขั้นและพฤติกรรมของระบบ</p>
+        <h3>Checklist ที่ควรลอง</h3>
+        <ul class="list-disc pl-6 mt-2">
+          <li>ค่าว่าง / ช่องว่างใน input</li>
+          <li>ตัวอักษรพิเศษ / ยาวเกิน</li>
+          <li>SQL injection string พื้นฐาน (<code>' OR '1'='1</code>)</li>
+          <li>emoji / ตัวเลขติดลบ / unicode</li>
+          <li>boundary value ที่เพิ่งพูด</li>
+        </ul>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Exploratory testing คือ simultaneous learning &amp; testing</li>
+            <li>Error guessing เก็บจาก log / ปัญหาจริงก่อน</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-caus" data-searchable>
+        <h2 id="td-8">8. Cause-Effect Graph</h2>
+        <h3>นิยาม</h3>
+        <p>แยก causes → effects เพื่อหา combination ของ conditions ที่ทำให้ effect ถึง</p>
+        <p>เชื่อมกับ Decision Table — ใช้ cause-effect graph หา conditions ที่ต้องมีตัวเลือกเพิ่ม</p>
+        <div class="key-points">
+          <h3>สรุปท่องจำ (Key Points)</h3>
+          <ul>
+            <li>Cause = condition ที่ controllable, Effect = condition/result</li>
+            <li>ใช้ graph เพื่อหา association ระหว่าง conditions</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="td-choose-section" data-searchable>
+        <h2 id="td-choose">ตารางเลือกเทคนิคให้เหมาะกับโจทย์</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead><tr><th>ถ้าถังโจทย์เป็น …</th><th>ให้ใช้เทคนิค</th></tr></thead>
+            <tbody>
+              <tr><td>Input range ที่รู้จักขีดจุดเปลี่ยน</td><td>BVA</td></tr>
+              <tr><td>Field ที่ต้องแบ่ง group ของ equivalent</td><td>EP</td></tr>
+              <tr><td>Rule/สถานการณ์หลายเงื่อนไข</td><td>Decision Table</td></tr>
+              <tr><td>Workflow ที่เปลี่ยน state</td><td>State Transition</td></tr>
+              <tr><td>User goal ที่ต้องแยก flow</td><td>Use Case</td></tr>
+              <tr><td>หลาย factor ที่อาจ interact</td><td>Pairwise</td></tr>
+              <tr><td>คาด errorจากผู้ใช้/ระบบ</td><td>Error Guessing</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-card">
+      <div>
+        <a class="footer-brand" href="index.html">QA <em>Playbook</em></a>
+        <p>Cheat sheet สำหรับ Software Testing &amp; Quality Assurance + Playwright — อ่านเร็ว เข้าใจไว ใช้ได้จริง</p>
+      </div>
+      <nav class="footer-links" aria-label="ลิงก์ท้ายหน้า">
+        <a href="fundamentals.html">Fundamentals</a>
+        <a href="test-design.html">Test Design</a>
+        <a href="playwright.html">Playwright</a>
+        <a href="playwright-recipes.html">Recipes</a>
+        <a href="tools.html">Tools</a>
+        <a href="checklist.html">Checklist</a>
+        <a href="links.html">Links</a>
+      </nav>
+      <p class="footer-copy">© 2026 QA Playbook · Static site · Made for learners</p>
+    </div>
+  </footer>
+
+  <script>
+    try { hljs.highlightAll(); } catch (e) { /* no-op */ }
+  </script>
+  <script src="assets/search-index.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
